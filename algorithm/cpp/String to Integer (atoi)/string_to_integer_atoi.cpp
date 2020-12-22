@@ -29,7 +29,7 @@ Note:
 #define INT_MIN     (-2147483647 - 1)
 #define INT_MAX      2147483647
 
-int atoi(const char *str) {
+int my_atoi(const char *str) {
     if (str==NULL || *str=='\0'){
         return 0;
     }
@@ -43,6 +43,12 @@ int atoi(const char *str) {
         neg = (*str=='-') ;
         str++;
     }
+
+    // cause we want to prevent overflow, so have to check before add digit
+    // for positive case
+    // new_val = 10 * ret + digit > INT_MAX   => ovreflow => return INT_MAX
+    //           10 * ret > (INT_MAX - digit)
+    //                ret > (INT_MAX - digit) / 10
     
     for(; isdigit(*str); str++) {
         int digit = (*str-'0');
@@ -56,6 +62,7 @@ int atoi(const char *str) {
             }
         }
 
+        // add digit
         ret = 10*ret + digit ;
     }
     
@@ -65,15 +72,16 @@ int atoi(const char *str) {
 
 int main()
 {
-    printf("\"%s\" = %d\n", "123", atoi("123"));
-    printf("\"%s\" = %d\n", "   123", atoi("    123"));
-    printf("\"%s\" = %d\n", "+123", atoi("+123"));
-    printf("\"%s\" = %d\n", " -123", atoi(" -123"));
-    printf("\"%s\" = %d\n", "123ABC", atoi("123ABC"));
-    printf("\"%s\" = %d\n", " abc123ABC", atoi(" abc123ABC"));
-    printf("\"%s\" = %d\n", "2147483647", atoi("2147483647"));
-    printf("\"%s\" = %d\n", "-2147483648", atoi("-2147483648"));
-    printf("\"%s\" = %d\n", "2147483648", atoi("2147483648"));
-    printf("\"%s\" = %d\n", "-2147483649", atoi("-2147483649"));
+    printf("\"%s\" = %d\n", "42", my_atoi("42"));
+    printf("\"%s\" = %d\n", "123", my_atoi("123"));
+    printf("\"%s\" = %d\n", "   123", my_atoi("    123"));
+    printf("\"%s\" = %d\n", "+123", my_atoi("+123"));
+    printf("\"%s\" = %d\n", " -123", my_atoi(" -123"));
+    printf("\"%s\" = %d\n", "123ABC", my_atoi("123ABC"));
+    printf("\"%s\" = %d\n", " abc123ABC", my_atoi(" abc123ABC"));
+    printf("\"%s\" = %d\n", "2147483647", my_atoi("2147483647"));
+    printf("\"%s\" = %d\n", "-2147483648", my_atoi("-2147483648"));
+    printf("\"%s\" = %d\n", "2147483648", my_atoi("2147483648"));
+    printf("\"%s\" = %d\n", "-2147483649", my_atoi("-2147483649"));
     return 0;
 }
