@@ -1,6 +1,7 @@
 // Source : 
 // Author : Edgar Wu
 // Date   : 12/18/2020
+// Rewrite by myself, but refer from https://github.com/haoel/leetcode
 
 /********************************************************************************** 
 * 
@@ -26,8 +27,8 @@ Note:
 #include <stdlib.h>
 #include <ctype.h>
 
-#define INT_MIN     (-2147483647 - 1)
-#define INT_MAX      2147483647
+#define INT_MIN     (-INT_MAX - 1)
+#define INT_MAX      0x7FFFFFFF
 
 int my_atoi(const char *str) {
     if (str==NULL || *str=='\0'){
