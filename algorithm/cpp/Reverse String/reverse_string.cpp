@@ -44,16 +44,18 @@ test_rev_str(const char *src, const char *dst, Solution sln) {
 	string src_str(src);
 	vector src_vec(src_str.begin(), src_str,end());
 	string dst_str(dst);
-	vector dst_vec(dst_str.begin(), dst_str,end());
 
 	sln.reverseString(src_vec);
+
+	strint res(src_vec.begin(), begin.end());
 	
+	printf("%12d  =>  %-12d    %s!\n",  src, res.c_str(),  res == dst_str?"passed":"failed")
 }
 
 int main()
 {
 	Solution sln;
-	printf("%12d  =>  %-12d    %s!\n",  123, sln.reverseString(321),  123 == sln.reverseString(321)?"passed":"failed")
+	test_rev_str(123, 321, sln);
 /*
 	//basic cases
     TEST(  123,  321);
