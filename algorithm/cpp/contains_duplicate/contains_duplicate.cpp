@@ -45,7 +45,13 @@ using namespace std;
 class Solution {
 public:
     bool containsDuplicate(vector<int>& nums) {
-        
+        unordered_map <int, int> num_map;
+        for (auto iter : nums ) {
+            if (num_map.find(iter) != num_map.end())
+                return true;
+            num_map[iter] = 1;
+        }
+        return false;
     }
 };
 

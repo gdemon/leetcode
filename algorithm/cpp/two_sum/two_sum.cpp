@@ -52,7 +52,24 @@ using namespace std;
 class Solution {
 public:
     vector<int> twoSum(vector<int>& nums, int target) {
+        map<int, int> diff_map;
+        vector<int> res;
+        int diff;
         
+        for (int i = 0; i < nums.size(); i++){
+            diff = target - nums[i];
+            
+            if (diff_map.find(nums[i]) != diff_map.end()) {
+                // find the target that match the result
+                res.push_back(diff_map[nums[i]]);
+                res.push_back(i);
+                break;
+            } else {
+                diff_map[diff] = i;
+            }
+        }
+        
+        return res;
     }
 };
 

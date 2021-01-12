@@ -52,7 +52,19 @@ using namespace std;
 class Solution {
 public:
     vector<int> plusOne(vector<int>& digits) {
+        int x, carry = 1;
+        vector<int> v;
+        while (digits.size()) {
+            x = digits.back();
+            digits.pop_back();
+            carry += x;
+            v.insert(v.begin(), carry % 10);
+            carry = carry / 10;
+        }
+        if (carry > 0)
+            v.insert(v.begin(), carry);
         
+        return v;
     }
 };
 

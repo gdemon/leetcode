@@ -46,10 +46,26 @@ using namespace std;
 class Solution {
 public:
     vector<int> intersect(vector<int>& nums1, vector<int>& nums2) {
+        unordered_map<int, int> res_map;
         
+        for (auto& i : nums1)
+            res_map[i]++;
+        
+        unordered_map<int, int>::iterator iter;
+        vector<int> res;
+        for (auto& i : nums2) {
+            
+            iter = res_map.find(i);
+            if (iter != res_map.end()) {
+                res.push_back(i);
+                res_map[i]--;
+                if (res_map[i] == 0)
+                    res_map.erase(iter);
+            }
+        }
+        return res;
     }
 };
-
 
 
 
