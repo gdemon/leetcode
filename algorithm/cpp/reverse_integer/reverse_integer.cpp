@@ -55,10 +55,26 @@ using namespace std;
 #define INT_MAX      0x7FFFFFFF
 
 class Solution {
+    
+#define INT_MAX     0x7FFFFFFF
+#define INT_MIN     (-INT_MAX - 1)    
 public:
     int reverse(int x) {
+        int rem, y = 0; // reminder
         
+        while(x != 0) {
+            rem = x % 10;
+            if (y > INT_MAX/10 || y < INT_MIN/10){
+                 return 0;
+            }
+            y = y * 10 + rem;
+            x = x /10;
+        }
+        
+        return y;
     }
+    
+
 };
 
 #define TEST(n, e)  printf("%12d  =>  %-12d    %s!\n",  n, sln.reverseString(n),  e == sln.reverseString(n)?"passed":"failed")
