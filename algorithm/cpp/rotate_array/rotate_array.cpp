@@ -83,7 +83,7 @@ public:
 
 #define TEST(n, e)  printf("%12d  =>  %-12d    %s!\n",  n, sln.reverseString(n),  e == sln.reverseString(n)?"passed":"failed")
 
-void print_ary(vector<int> &tst) {
+void print_ary(vector<int> &tst) {
 	for (unsigned long i = 0; i < tst.size(); i++)
 		cout << tst[i];
 	cout << endl;
@@ -193,43 +193,23 @@ using namespace std;
 
 class Solution {
 public:
-    void rotate(vector<vector<int>>& matrix) {
-        
-    }
+	void revert(int start, int end, vector<int>& nums) {
+		unsigned long sz = end - start + 1;
+		int i, tmp;
+		for (i=0; i < sz/2; i++) {
+			tmp = nums[(start+i)];
+			nums[(start+i)] = nums[(end-i)];
+			nums[(end-i)] = tmp;
+		}
+	}
+	void rotate(vector<int>& nums, int k) {
+		unsigned long sz = nums.size();
+		int last_k = k % sz;
+		revert(0, sz-1, nums);
+		revert(0, last_k-1, nums);
+		revert(last_k, sz-1, nums);
+	}
 };
 
 
 
-
-
-
-
-void verify_func(Solution &sln, string &haystack, string &needle) {
-	int found = sln.strStr(haystack, needle);
-
-	if (found != -1) {
-		cout << "found " << needle << " in " << haystack << " on " << found << endl;
-	} else {
-		cout << "can't found " << needle << " in " << haystack << endl;
-	}
-}
-
-int main()
-{
-    Solution sln;
-	string haystack, needle;
-
-	haystack = "mississippi";
-    needle = "issi";
-	verify_func(sln, haystack, needle);
-
-	needle = "issip";
-	verify_func(sln, haystack, needle);
-		
-	haystack = "babbbbbabb";
-    needle = "bbab";
-	verify_func (sln, haystack, needle);
-
-    return 0;
-}
->>>>>>> 0729e444b16db7e9fe5cf56a5ef0d362f354e24f
