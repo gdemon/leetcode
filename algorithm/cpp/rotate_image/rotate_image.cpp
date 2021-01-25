@@ -44,7 +44,17 @@ Constraints:
     -1000 <= matrix[i][j] <= 1000
 
 
- 
+   0   1   2   3
+0 0,0 0,1 0,2 0,3
+1 1,0 1,1 1,2 1,3
+2 2,0 2,1 2,2 2,3
+3 3,0 3,1 3,2 3,3
+
+0,0 -> tmp
+3,0 -> 0,0 (to top)
+3,3 -> 3,0 (to left)
+0,3 -> 3,3 (do bottom)
+tmp -> 0,3 (to right)
 
 
 
@@ -61,61 +71,27 @@ Constraints:
 
 using namespace std;
 
-class Solution {
-public:
-    void rotate(vector<int>& nums, int k) {
-        int sz = nums.size();
-        if (sz == 1)
-            return;
-        if ((sz%2 == 0) && k == sz/2) {
-            rotate_by_k_half_size(nums, k);
-        } else {
-            rotate_by_k(nums, k);
-        }
-        
-        //for (int i=0; i < k; i++)            rotate_by_1(nums, k);
-    }
-    
-    void rotate_by_1(vector<int>& nums, int k) {
-        int tmp, j, ary_end;
-        ary_end = nums.size()-1;
-        tmp = nums[ary_end];
-        //shift by 1
-        for (int i=ary_end; i > 0; i--)
-            nums[i]=nums[(i-1)];
-        
-        nums[0]=tmp;
-    }
-    
-    void rotate_by_k(vector<int>& nums, int k) {
-        int t1, t2, j, sz, beg_idx, new_idx;
-        sz = nums.size();
-        t1 = nums[0];
-        beg_idx = 0;
-        
-        for (int i=0; i < sz; i++) {
-            new_idx = (beg_idx + k)%sz;
-            t2 = t1;
-            t1 = nums[new_idx];
-            nums[new_idx]= t2;
-            beg_idx = new_idx;
+void rotate(vector<vector<int> > &matrix) {
+
+    int n = matrix.size();
+
+    for( int i=0; i<n/2; i++ ){
+        int low=i, high=n-i-1;
+        for (int j=low; j<high; j++){
+            int tmp;
+            tmp = matrix[i][j];
+            // left to top 
+            matrix[i][j] = matrix[n-j-1][i];
+            // bottom to left
+            matrix[n-j-1][i] = matrix[n-i-1][n-j-1];
+            // right to bottom
+            matrix[n-i-1][n-j-1] = matrix[j][n-i-1];
+            // top to right
+            matrix[j][n-i-1] = tmp;
         }
     }
-    
-    // this special case will cause taht swap half elements
-    void rotate_by_k_half_size(vector<int>& nums, int k) {
-        int sz = nums.size();
-        int tmp, new_idx;
-        for (int i=0; i < sz/2; i++) {
-            new_idx = (i+k) % sz;
-            tmp = nums[new_idx];
-            nums[new_idx] = nums[i];
-            nums[i] = tmp;
-        }
-    }
-       
-    
-};
+}
+
 
 
 
