@@ -27,62 +27,99 @@ Note:
 #include <stdlib.h>
 #include <ctype.h>
 
+#include <string>
+#include <iostream>
+#include <sstream>
+
+
 #define INT_MIN     (-INT_MAX - 1)
 #define INT_MAX      0x7FFFFFFF
 
-int my_atoi(const char *str) {
-    if (str==NULL || *str=='\0'){
-        return 0;
-    }
-    
-    int ret=0;
-    
-    for(;isspace(*str); str++);
-    
-    bool neg=false;
-    if (*str=='-' || *str=='+') {
-        neg = (*str=='-') ;
-        str++;
-    }
+using namespace std;
 
-    // cause we want to prevent overflow, so have to check before add digit
-    // for positive case
-    // new_val = 10 * ret + digit > INT_MAX   => ovreflow => return INT_MAX
-    //           10 * ret > (INT_MAX - digit)
-    //                ret > (INT_MAX - digit) / 10
-    
-    for(; isdigit(*str); str++) {
-        int digit = (*str-'0');
-        if(neg){
-            if( -ret < (INT_MIN + digit)/10 ) {
-                return INT_MIN;
-            }
-        }else{
-            if( ret > (INT_MAX - digit) /10 ) {
-                return INT_MAX;
+
+class Solution {
+public:
+    int myAtoi(string s) {
+        if (0 == s.size())
+            return 0;
+        
+        int i, ret = 0, is_neg = 0, digit;
+
+        // to pass begin space
+        for (i=0; i<s.size();) {
+            if (isspace(s[i])) {
+                i++;
+            } else{
+                break;
             }
         }
+            
+        
+        if ('-' == s[i] || '+' == s[i]) {
+            if ('-' == s[i])
+                is_neg = 1;
+            i++;
+        }
+        cout << s << " is_neg: " << is_neg  << endl;
 
-        // add digit
-        ret = 10*ret + digit ;
+        // cause we want to prevent overflow, so have to check before add digit
+        // for positive case
+        // new_val = 10 * ret + digit > INT_MAX   => ovreflow => return INT_MAX
+        //           10 * ret > (INT_MAX - digit)
+        //                ret > (INT_MAX - digit) / 10
+        // for negative case
+        // new_val = 10 * ret + digit > INT_MAX   => ovreflow => return INT_MAX
+        //           10 * ret > (INT_MAX - digit)
+        //                ret > (INT_MAX - digit) / 10
+        
+        for(; isdigit(s[i]); i++) {
+            digit = (s[i] - '0');
+            if(is_neg){
+                if( -ret < (INT_MIN + digit)/10 ) {
+                    return INT_MIN;
+                }
+            }else{
+                if( ret > (INT_MAX - digit) /10 ) {
+                    return INT_MAX;
+                }
+            }
+
+            // add digit
+            ret = 10*ret + digit ;
+        }
+        
+        return is_neg?-ret:ret;
     }
-    
-    return neg?-ret:ret;
+};
+
+
+
+void verify_func(Solution &sln, int res, const char *test_str) {
+    int test_res = sln.myAtoi(test_str); 
+
+    if (test_res == res) {
+        cout << "myAtoi()'s result is correct: " << test_res << endl;
+    } else {
+        cout << "myAtoi()'s result is wrong: " << test_res << " while should be: " << res << endl;
+    }
+
 }
 
 
-int main()
-{
-    printf("\"%s\" = %d\n", "42", my_atoi("42"));
-    printf("\"%s\" = %d\n", "123", my_atoi("123"));
-    printf("\"%s\" = %d\n", "   123", my_atoi("    123"));
-    printf("\"%s\" = %d\n", "+123", my_atoi("+123"));
-    printf("\"%s\" = %d\n", " -123", my_atoi(" -123"));
-    printf("\"%s\" = %d\n", "123ABC", my_atoi("123ABC"));
-    printf("\"%s\" = %d\n", " abc123ABC", my_atoi(" abc123ABC"));
-    printf("\"%s\" = %d\n", "2147483647", my_atoi("2147483647"));
-    printf("\"%s\" = %d\n", "-2147483648", my_atoi("-2147483648"));
-    printf("\"%s\" = %d\n", "2147483648", my_atoi("2147483648"));
-    printf("\"%s\" = %d\n", "-2147483649", my_atoi("-2147483649"));
+int main() {
+    Solution sln;
+    verify_func(sln, 42, "42");
+    verify_func(sln, 123, "123");
+    verify_func(sln, 123, "   123");
+    verify_func(sln, 123, "+123");
+    verify_func(sln, -123, " -123");
+    verify_func(sln, 123, "123ABC");
+    verify_func(sln, 0, " abc123ABC");
+    verify_func(sln, 2147483647, "2147483647");
+    verify_func(sln, -2147483648, "-2147483648");
+    verify_func(sln, 2147483648, "2147483648");
+    verify_func(sln, -2147483649, "-2147483649");
+
     return 0;
 }
