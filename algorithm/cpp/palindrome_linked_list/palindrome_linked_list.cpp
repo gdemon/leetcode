@@ -4,29 +4,44 @@
 // Rewrite by myself, but refer from https://github.com/haoel/leetcode
 
 /********************************************************************************** 
-Given the head of a singly linked list, return true if it is a palindrome.
+Given head, the head of a linked list, determine if the linked list has a cycle in it.
+
+There is a cycle in a linked list if there is some node in the list that can be reached again by continuously following the next pointer. Internally, pos is used to denote the index of the node that tail's next pointer is connected to. Note that pos is not passed as a parameter.
+
+Return true if there is a cycle in the linked list. Otherwise, return false.
 
  
 
 Example 1:
 
-Input: head = [1,2,2,1]
+Input: head = [3,2,0,-4], pos = 1
 Output: true
+Explanation: There is a cycle in the linked list, where the tail connects to the 1st node (0-indexed).
 
 Example 2:
 
-Input: head = [1,2]
+Input: head = [1,2], pos = 0
+Output: true
+Explanation: There is a cycle in the linked list, where the tail connects to the 0th node.
+
+Example 3:
+
+Input: head = [1], pos = -1
 Output: false
+Explanation: There is no cycle in the linked list.
 
  
 
 Constraints:
 
-    The number of nodes in the list is in the range [1, 105].
-    0 <= Node.val <= 9
+    The number of the nodes in the list is in the range [0, 10^4].
+    -10^5 <= Node.val <= 10^5
+    pos is -1 or a valid index in the linked-list.
 
  
-Follow up: Could you do it in O(n) time and O(1) space?
+
+Follow up: Can you solve it using O(1) (i.e. constant) memory?
+
 
 
 *               
@@ -49,55 +64,65 @@ using namespace std;
  * struct ListNode {
  *     int val;
  *     ListNode *next;
- *     ListNode() : val(0), next(nullptr) {}
- *     ListNode(int x) : val(x), next(nullptr) {}
- *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ *     ListNode(int x) : val(x), next(NULL) {}
  * };
  */
 class Solution {
 public:
-    ListNode* findMiddle(ListNode* head) {
-        ListNode *p1=head, *p2=head;
-        while(p2 && p2->next){
-            p1 = p1->next;
-            p2 = p2->next->next;
-        }
-        return p1;
-    }
-    // initialize
-    //     prev_head  head->     head's_next
-    // begin reverse
-    //     prev_head  head->     tmp_next
-    //     prev_head<-head       tmp_next
-    // old prev_head<-prev_head<-tmp_next
-    // old prev_head<-prev_head<-head
-    ListNode* reverseLink(ListNode* head) {
-        ListNode* prev_head = NULL, *tmp_next = NULL;
+    // using a map to store the nodes we walked, o(n) space
+    bool has_cycle_01(ListNode *head) {
+        unordered_map<ListNode *, int> map_ptr;
+        ListNode* node = head;
         
-        while (head) {
-            tmp_next = head->next;
-            head->next = prev_head;
-            prev_head = head;
-            head = tmp_next;
-        }
-        return prev_head;
-    }
-    
-
-    bool isPalindrome(ListNode* head) {
-        if (NULL==head)
-            return false;
-        ListNode* pMid = findMiddle(head);
-        ListNode* pRev = reverseLink(pMid); 
-        // head -> ... -> pmid <- ... <- pRev
-        for(;head!=pMid; head=head->next, pRev=pRev->next) {
-            if (head->val != pRev->val) {
-                return false;
+        while(NULL != node) {
+            if (map_ptr.find(node) == map_ptr.end()) {
+                map_ptr[node] = 1;
+                node = node->next;
+            } else {
+                return true;
             }
         }
-        return true;
+        return  false;
+    }
+
+    // Change the node's of value, mark the footprint by a special value, o(1) space
+    // but I will not suggest this measure, it will spoil the data
+    bool has_cycle_02(ListNode *head) {
+        const int val_mark = 100000 + 1; // -10^5 <= Node.val <= 10^5
+        ListNode* node = head;
+        while(node) {
+            if (node->val == val_mark) {
+                return true;
+            } else {
+                node->val = val_mark;
+                node = node->next;
+            }
+        }
+        return false;
+    }
+
+    /*
+     * if there is a cycle in the list, then we can use two pointers travers the list.
+     * one pointer traverse one step each time, another one traverse two steps each time.
+     * so, those two pointers meet together, that means there must be a cycle inside the list.
+        o(1) space
+     */
+    bool has_cycle_03(ListNode *head) {
+        if (head==NULL || head->next==NULL) return false;
+        ListNode* fast=head;
+        ListNode* slow=head;
+        do{
+            slow = slow->next;
+            fast = fast->next->next;
+        }while(fast != NULL && fast->next != NULL && fast != slow);
+        return fast == slow? true : false;
+    }
+    bool hasCycle(ListNode *head) {
+        return has_cycle_01(head);
+        
     }
 };
+
 
 
 
