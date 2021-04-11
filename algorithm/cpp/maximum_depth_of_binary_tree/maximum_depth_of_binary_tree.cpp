@@ -5,31 +5,35 @@
 
 /********************************************************************************** 
 * 
-Given the root of a binary tree, return its maximum depth.
+Given the root of a binary tree, determine if it is a valid binary search tree (BST).
 
-A binary tree's maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.
+A valid BST is defined as follows:
+
+    The left subtree of a node contains only nodes with keys less than the node's key.
+    The right subtree of a node contains only nodes with keys greater than the node's key.
+    Both the left and right subtrees must also be binary search trees.
 
  
 
 Example 1:
 
-Input: root = [3,9,20,null,null,15,7]
-Output: 3
+Input: root = [2,1,3]
+Output: true
 
 Example 2:
 
-Input: root = [1,null,2]
-Output: 2
+Input: root = [5,1,4,null,null,3,6]
+Output: false
+Explanation: The root node's value is 5 but its right child's value is 4.
 
-Example 3:
+ 
 
-Input: root = []
-Output: 0
+Constraints:
 
-Example 4:
+    The number of nodes in the tree is in the range [1, 104].
+    -231 <= Node.val <= 231 - 1
 
-Input: root = [0]
-Output: 1
+
 
 *               
 **********************************************************************************/
@@ -46,27 +50,49 @@ Output: 1
 
 using namespace std;
 
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+
 class Solution {
 public:
-    int maxDepth(TreeNode* root) {
-        if (NULL == root)
-            return 0;
-        
-        // leaf node
-        if (!root->left && !root->right)
-            return 1;
-        
-        int left_max_depth=1, right_max_depth=1;
-        if (root->left)
-            left_max_depth += maxDepth(root->left);
-        
-        if (root->right)
-            right_max_depth += maxDepth(root->right);
-                    
-        return left_max_depth>right_max_depth?left_max_depth:right_max_depth;
-        
+    bool isValidBST(TreeNode *root) {
+
+        // traverse and dump the tree first
+        // if it is BST, the dump array should be sorted
+        vector<TreeNode*> stack;
+        TreeNode* node = root;
+        vector<int> v;
+        while (stack.size()>0 || node!=NULL) {
+            if (node!=NULL){
+                stack.push_back(node);
+                node = node->left;
+            }else{
+                node = stack.back();
+                stack.pop_back();
+                v.push_back(node->val);
+                node = node->right;
+            }
+        }
+
+        //check the vector wehther sorted or not
+        for(int i=0; v.size()>0 && i<v.size()-1; i++){
+            if (v[i] >= v[i+1]) {
+                return false;
+            }
+        }
+
+        return true;
     }
-    
+
 };
 
 void verify_func(Solution &sln, int& n, string &res) {
