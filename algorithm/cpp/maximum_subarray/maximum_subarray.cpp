@@ -63,7 +63,7 @@ public:
         if (1 == ary_sz)
             return nums[0];
         // sum_vec[i] stores the maximum value of contineous subary untill i
-        vector<int> sum_vec(ary_sz);
+        vector<int> sum_vec(ary_sz, 0);
         int max_sum;
 
         sum_vec[0] = nums[0];
