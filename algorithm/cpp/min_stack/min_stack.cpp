@@ -52,41 +52,30 @@ minStack.getMin(); // return -2
 
 using namespace std;
 #include <stack>
+#include <map>
 
 
 /*
- * The original idea is very good, I have nothing to improve.
  * Idea: 
  *
- *    Using two stacks, 
+ *    Using stack and map
  *    1) one stack is the real stack to store the data.
- *    2) another stack store the minimal number when it changes.
+ *    2) map is used to store the minimal number when it changes. Map is implemented by RB tree. 
+        So when you pop element, you just remove the element from the map.
+        Then the 1st element will always be the minimum value.
+        Map is a <key, val> pair. The value here is the ref count.
+        We use value as the ref count here.
+        You have to remove the pair from map only when the ref count == 0.
+        And you only have to redefine min value when you remove element from map.
  *
- *    For example:
- *
- *        if we keep pushing the following numbers:
- *        5 1 1 2 3 2 
- *        the minial number stack will be: 
- *        5 1 1   <-- only store the number which <= cureent minimal number
- *   
- *    Then, when we pop up the stack.
- *
- *    we need compare whether the current number is the current minial number.
- *    if it is, then we need popup the number in minimal number stack.
  *        
  */
 class MinStack {
     private:
-        //Using a minData struct to remove the duplication in minimal stack
-        //which can save the memory.
-        struct minData{
-            int min;
-            int cnt;    // reference count
-            minData():min(0), cnt(0) {}
-            minData(int m, int c):min(m),cnt(c){}
-        };
         std::stack<int> myStack; //real stack store the data
-        std::stack<minData> minStack; //minimal number stack store the number 
+        //std::stack<int> minStack; //minimal number stack store the number 
+        std::map<int, int> minMap;
+        std::map<int, int>::iterator iter;
         int min; //current minial number
 
     public:
@@ -94,20 +83,25 @@ class MinStack {
         void push(int x) {
             if(myStack.empty()){
                 min = x;
-                minStack.push(minData(x,1));
+                minMap[x] = 1;
             } else {
-                if (min >= x ){
+                // in push case,  change min value directly
+                if (min > x)
                     min = x;
-                    //if current minial number already pushed, then just add the reference coount.
-                    if (minStack.top().min == x){
-                        minStack.top().cnt++;
-                    }else{
-                        minStack.push(minData(x,1));
-                    }
-                }
+                 addMap(x);
             }
             myStack.push(x);
 
+        }
+
+        void addMap(int x) {           
+            iter = minMap.find(x);
+            if (iter == minMap.end()) {
+                minMap[x] = 1;
+            } else {
+                // inc ref count if found
+                minMap[x]++;
+            }
         }
 
         void pop() {
@@ -116,16 +110,27 @@ class MinStack {
 
             int top_val = myStack.top();
             myStack.pop();
-            if (minStack.top().min == top_val) {
-                //de-reference the count at first.
-                if (minStack.top().cnt > 1){
-                    minStack.top().cnt--;
-                } else {
-                    minStack.pop();
-                    min = minStack.top().min;
+
+            iter = minMap.find(top_val);
+            if (1 == iter->second) {
+                // this is the last element, so we need to erase it from the map
+                minMap.erase(iter);
+                // here is the special case that we need to handle
+                if (min == top_val) {
+                    // The element we need to remove from the map is the minimum one
+                    // So have to find a new minimum one after remove the element from the map
+                    // In a sorted map, the first element (pointed by begin()) is always the minimum one
+                    iter = minMap.begin();
+                    min = iter->first;
                 }
+            } else {
+                // dec ref count
+                iter->second--;
             }
+            
+            
         }
+
 
         int top() {
             return myStack.top();
@@ -136,7 +141,7 @@ class MinStack {
         }
         void clear() {          
             myStack = std::stack<int>();
-            minStack = std::stack<minData>();
+            minMap.clear();
         }
 
 };
