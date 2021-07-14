@@ -68,24 +68,34 @@ public:
         // new_val = 10 * ret + digit > INT_MAX   => ovreflow => return INT_MAX
         //           10 * ret > (INT_MAX - digit)
         //                ret > (INT_MAX - digit) / 10
-        // for negative case
+
+        // for negative case, but we don't check negative case although we list the equation
+        // ref the comment of value part calculation.
         // new_val = 10 * ret + digit > INT_MAX   => ovreflow => return INT_MAX
         //           10 * ret > (INT_MAX - digit)
         //                ret > (INT_MAX - digit) / 10
         
         for(; isdigit(s[i]); i++) {
             digit = (s[i] - '0');
-            if(is_neg){
-                if( -ret < (INT_MIN + digit)/10 ) {
-                    return INT_MIN;
-                }
-            }else{
-                if( ret > (INT_MAX - digit) /10 ) {
-                    return INT_MAX;
-                }
+            // Check if overflow before add value.
+            // to handle the very special case that input == minimum negative exactly
+            // max_int = 2^31 - 1, we add the value first and we append sign value in the final 
+            // e.g. if the input is -12345, we add value first untill get 12345, and append sign to get -12345
+            // this way is like a mirror, +x -> -x
+            // this imply the maximum negative value we can handle is from (2^31 - 1) to -(2^31 - 1) == -2^31 + 1
+            // But acctaul, the minium negative value is -2^31.
+            // This imply if the imput value is -2^31 exactly, the value part will be 2^31 and then overflow
+            // so we just need to handl the value part only.
+            // Anyway, the concept is very easy. 
+            // Regardless the negative sign, if the value part if overflow, the final value is overflow too.
+            // Once overflow, return INT_MIN or INT_MAX depends is its negative sign
+
+            if( ret > (INT_MAX - digit) /10 ) {
+                //value part is overflow....
+                return is_neg?INT_MIN:INT_MAX;
             }
 
-            // add digit
+            // do not overflow, add digit
             ret = 10*ret + digit ;
         }
         
