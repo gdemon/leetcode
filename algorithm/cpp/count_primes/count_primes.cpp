@@ -165,16 +165,30 @@ using namespace std;
 
 class Solution {
 public:
-    bool isPowerOfThree(int n) {
-        for ( ; n>0; n/=3) {
-            if (n==3 || n==1)
-                return true;
-            if (n%3 != 0)
-                return false;
+    int countPrimes(int n) {
+        // by default, mark each value as a prime value
+        vector<bool> isPrimer(n, true);
+
+        for(int i=2; i*i<n; i++){
+            if (isPrimer[i]){
+                for(int j=i*i; j<n; j+=i){
+                    isPrimer[j] = false;
+                }
+            }
         }
-        return false;
+
+        int cnt = 0;
+        for(int i=2; i<n; i++){
+            if (isPrimer[i]) { 
+                //cout << i << ", ";
+                cnt++;
+            }
+        }
+        return cnt;
     }
 };
+
+
 
 
 
